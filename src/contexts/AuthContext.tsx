@@ -29,14 +29,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
+  const token = localStorage.getItem('token');
+  const userData = localStorage.getItem('user');
+
+  if (token && userData) {
+    try {
       setUser(JSON.parse(userData));
+    } catch (error) {
+      console.error("Failed to parse user from localStorage:", error);
+      setUser(null);
+      localStorage.removeItem('user'); // rensa ogiltig data
+      localStorage.removeItem('token'); // valfritt
     }
-    setLoading(false);
-  }, []);
+  }
+
+  setLoading(false);
+}, []);
 
   const login = async (data: LoginData) => {
     try {
